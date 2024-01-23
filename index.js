@@ -42,8 +42,11 @@ let dataObjc = JSON.parse(data)
 
 
 const server = http.createServer((request,response)=>{
-   const pathName = request.url
-   if(pathName === '/' || pathName === '/overview'){
+
+        const {query,pathname} = url.parse(request.url,true)
+
+   
+   if(pathname === '/' || pathname === '/overview'){
     response.writeHead(200,{
         "Content-type" : "text-html",
     })
@@ -62,12 +65,16 @@ const server = http.createServer((request,response)=>{
     response.end(output)
 
 
-   }else if (pathName === '/product'){
+   }else if (pathname === '/product'){
+    console.log(query);
     response.writeHead(200,{
         "Content-type" : "type-json"
     })
+    const myProduct = dataObjc[query.id]
+    const output = replaceTemplate(templateProduct,myProduct)
 
-    response.end(templateProduct)
+    console.log(myProduct);
+    response.end(output)
 
 
    }else{
