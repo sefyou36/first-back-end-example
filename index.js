@@ -16,6 +16,12 @@ const replaceTemplate = (template,item) =>{
             output = output.replace(/{%FROM%}/g, item.from);
             output = output.replace(/{%NUTRIENTS%}/g, item.nutrients);
             output = output.replace(/{%DESCRIPTION%}/g, item.description);
+            output = output.replace(/{%ID%}/g, item.id);
+            
+            if(!item.organic){
+                
+                output = output.replace(/{%NOT_ORGANIC%}/g, 'not-organic');
+        }
 
 
 return output;
@@ -24,7 +30,7 @@ return output;
 
 
 
-const templateOverview =  fs.readFileSync(`${__dirname}/templates/overview.html`);
+const templateOverview =  fs.readFileSync(`${__dirname}/templates/overview.html`,'utf-8');
 const templateCard = fs.readFileSync(`${__dirname}/templates/card.html`,'utf-8');
 const templateProduct = fs.readFileSync(`${__dirname}/templates/product.html`,'utf-8');
 
@@ -38,21 +44,22 @@ let dataObjc = JSON.parse(data)
 const server = http.createServer((request,response)=>{
    const pathName = request.url
    if(pathName === '/' || pathName === '/overview'){
-
-        let el = dataObjc.map(item => item)
-
-       let x = replaceTemplate(templateCard,el)
-
-       console.log(x)
-
-    let  output = templateOverview.replace(`{%CARD%}`, templateCard);
-    console.log(output)
-
     response.writeHead(200,{
         "Content-type" : "text-html",
     })
+        let cardHtml = dataObjc.map(item => replaceTemplate(templateCard,item)).join('')
 
-    response.end(templateOverview)
+        // console.log(cardHtml)
+
+   
+
+    let  output = templateOverview.replace('{%CARD%}', cardHtml);
+
+    // console.log(output)
+
+   
+
+    response.end(output)
 
 
    }else if (pathName === '/product'){
